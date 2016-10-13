@@ -32,7 +32,7 @@ if PRECOMPUTE:
     coef_mat = stencil_coefficient_matrix(ORDER)
 
 
-def set_precompute(PreComp, Order=3):
+def set_precompute(pre_comp, order=3):
     """Sets option to precompute basis polynomials and matrices.
 
     Parameters
@@ -47,8 +47,8 @@ def set_precompute(PreComp, Order=3):
     (void)
     """
     global PRECOMPUTE, ORDER
-    PRECOMPUTE = PreComp
-    ORDER = Order
+    PRECOMPUTE = pre_comp
+    ORDER = order
     if PRECOMPUTE:
         global basis, osc_ind_mat, coef_mat
         basis = basis_functions(ORDER)
@@ -98,7 +98,6 @@ def reconstruct(x, y, N=ORDER-1):
 
     recon = {}
     for i in range(N, N + cell_amount):
-        print(i)
 
         # Set amount of stencils  based on whether N is odd or even
         # Get piecewise constant values of y within cells
