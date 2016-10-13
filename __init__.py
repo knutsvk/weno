@@ -15,15 +15,15 @@ Reference:
     Volume 268, 1 January 2014, Pages 359-387
     DOI: 10.1016/j.cma.2013.09.022
 """
-from weno.funcs import nonlinear_weights, scale_func_arg, weird_func
-from weno.generate import basis_functions, oscillation_indicator_matrix, \
-        stencil_coefficient_matrix
-from weno.settings import PRECOMPUTE, ORDER
-
 import os.path
 from matplotlib import pyplot as plt
 import numpy as np
 from numpy.linalg import solve as linsol
+
+from weno.funcs import nonlinear_weights, scale_func_arg, weird_func
+from weno.generate import basis_functions, oscillation_indicator_matrix, \
+        stencil_coefficient_matrix
+from weno.settings import PRECOMPUTE, ORDER
 
 if PRECOMPUTE:
     basis = basis_functions(ORDER)
@@ -89,6 +89,10 @@ def reconstruct(x, y, N=ORDER-1):
         osc_ind_mat = oscillation_indicator_matrix(N + 1)
         coef_mat = stencil_coefficient_matrix(N + 1)
 
+    # TODO: 
+    # Extend domain to both sides, copy value in last cell out to ghost cells.
+    # This allows for reconstructions in the whole domain. 
+
     # Need N neighbouring cells on each side (for stencils), so can only use
     # the centermost cells of domain
     recon = {}
@@ -99,16 +103,16 @@ def reconstruct(x, y, N=ORDER-1):
         if N % 2:
             num_stencils = 4
             y_cells = [
-                    y[i - int(np.floor(N/2)):i + int(np.ceil(N/2)) + 1],
-                    y[i - int(np.ceil(N/2)):i + int(np.floor(N/2)) + 1],
-                    y[i - N:i + 1],
-                    y[i:i + N + 1]]
+                y[i - int(np.floor(N/2)):i + int(np.ceil(N/2)) + 1],
+                y[i - int(np.ceil(N/2)):i + int(np.floor(N/2)) + 1],
+                y[i - N:i + 1],
+                y[i:i + N + 1]]
         else:
             num_stencils = 3
             y_cells = [
-                    y[i - int(N/2):i + int(N/2) + 1],
-                    y[i - N:i + 1],
-                    y[i:i + N + 1]]
+                y[i - int(N/2):i + int(N/2) + 1],
+                y[i - N:i + 1],
+                y[i:i + N + 1]]
 
         # Generate weights for each stencil by solving linear systems
         stenc_weights = linsol(coef_mat, y_cells)
