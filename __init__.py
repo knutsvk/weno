@@ -20,7 +20,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 from numpy.linalg import solve as linsol
 
-from weno.funcs import nonlinear_weights, scale_func_arg, weird_func
+from weno.funcs import nonlinear_weights, scale_func_arg, \
+        weird_func
 from weno.generate import basis_functions, oscillation_indicator_matrix, \
         stencil_coefficient_matrix
 from weno.settings import PRECOMPUTE, ORDER
@@ -89,14 +90,15 @@ def reconstruct(x, y, N=ORDER-1):
         osc_ind_mat = oscillation_indicator_matrix(N + 1)
         coef_mat = stencil_coefficient_matrix(N + 1)
 
-    # TODO: 
-    # Extend domain to both sides, copy value in last cell out to ghost cells.
-    # This allows for reconstructions in the whole domain. 
+    # Extend domain to both sides, copy function value in last cell out to
+    # ghost cells.  This allows for reconstructions in the whole domain. 
+    x = np.concatenate((x[0] - dx * np.arange(N + 1, 1, -1), x, x[-1] + dx *
+        np.arange(1, N + 1)))
+    y = np.concatenate((y[0] * np.ones(N), y, y[-1] * np.ones(N)))
 
-    # Need N neighbouring cells on each side (for stencils), so can only use
-    # the centermost cells of domain
     recon = {}
-    for i in range(N, cell_amount-N):
+    for i in range(N, N + cell_amount):
+        print(i)
 
         # Set amount of stencils  based on whether N is odd or even
         # Get piecewise constant values of y within cells
@@ -177,7 +179,7 @@ def decon_recon(domain=[0, 12], func=weird_func, poly_deg=ORDER-1,
         plt.xlim(domain)
 
         # Plot the reconstructed polynomial function within each cell
-        for i in range(poly_deg, num_cells - poly_deg):
+        for i in range(0, num_cells):
             x_cell = np.linspace(x[i] - 0.5 * dx, x[i] + 0.5 * dx)
-            plt.plot(x_cell, reconstruction[i-poly_deg](x_cell), 'b-')
+            plt.plot(x_cell, reconstruction[i](x_cell), 'b-')
         plt.show()

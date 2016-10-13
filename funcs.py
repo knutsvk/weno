@@ -1,14 +1,8 @@
 """Helper functions for WENO reconstruction
 """
-import os.path
 import numpy as np
 from .settings import EPS, R, LAMBDA_SIDE, LAMBDA_CENTRE
 
-
-def add_ghost_cells(vec):
-    """Adds N ghost cells to each side of input vector"""
-    # TODO: Implement 
-    return vec;
 
 def nonlinear_weights(sten_w, osc_ind, num_stencils):
     """Return weights for basis functions.
