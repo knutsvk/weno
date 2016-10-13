@@ -1,0 +1,11 @@
+Instead of returning dict of poly1d instances, we should return nparray of
+weights:
+
+w = np.zeros(num_cells, N + 1)
+{...}
+w[i, :] = nonlinear_weights(...)
+
+Then in the decon_recon() function, we need to change the way plotting is done
+(need to import basis funcs here as well). 
+
+This will be beneficial for the Discontinuous Galerkin step later. 
